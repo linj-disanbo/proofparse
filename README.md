@@ -1,4 +1,4 @@
-# 存证解析工具
+# 存证解析库
 
 ## 背景
 ```
@@ -21,4 +21,3 @@
 [{"label":"相册","key":"","type":3,"data":[{"data":[{"type":"image","format":"hash","value":""}],"type":1,"key":"","label":"相册"},{"data":{"type":"text","format":"string","value":""},"type":0,"key":"","label":"照片描述"}]},{"label":"ext","key":"","type":3,"data":[{"data":{"type":"text","format":"string","value":""},"type":0,"key":"存证名称","label":"存证名称"},{"data":{"type":"text","format":"string","value":""},"type":0,"key":"basehash","label":"basehash"},{"data":{"type":"text","format":"string","value":""},"type":0,"key":"prehash","label":"prehash"},{"data":{"type":"text","format":"string","value":""},"type":0,"key":"存证类型","label":"存证类型"}]}]
 
 ```
-

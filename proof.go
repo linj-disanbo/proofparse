@@ -70,6 +70,8 @@ func (p *Proof) checkVersion() {
 		p.Version = Version1
 	case strings.Index(strings.ToUpper(p.Version), Version2) != -1:
 		p.Version = Version2
+	default:
+		p.Version = Version1
 	}
 }
 

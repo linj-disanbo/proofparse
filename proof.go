@@ -7,8 +7,9 @@ import (
 )
 
 const (
-	Version1 = "V1"
-	Version2 = "V2"
+	OldVersion = "1.0.0"
+	Version1   = "V1"
+	Version2   = "V2"
 )
 
 type Proof struct {
@@ -66,12 +67,12 @@ func (p *Proof) ParseProof() error {
 
 func (p *Proof) checkVersion() {
 	switch {
+	case p.Version == OldVersion:
+		p.Version = Version1
 	case strings.Index(strings.ToUpper(p.Version), Version1) != -1:
 		p.Version = Version1
 	case strings.Index(strings.ToUpper(p.Version), Version2) != -1:
 		p.Version = Version2
-	default:
-		p.Version = Version1
 	}
 }
 

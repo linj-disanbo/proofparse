@@ -37,6 +37,13 @@ func NewProof(data, template, value, version string) *Proof {
 func (p *Proof) ParseProof() error {
 	switch p.Version {
 	case Version1:
+		//存证内容和完整数据保持一致
+		if p.ComleteData != "" {
+			p.Value = p.ComleteData
+		}
+		if p.Value != "" {
+			p.ComleteData = p.Value
+		}
 		return nil
 	case Version2:
 		//分离模板和内容

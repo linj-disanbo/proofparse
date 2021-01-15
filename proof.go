@@ -15,7 +15,7 @@ const (
 type Proof struct {
 	ComleteData string //完整数据
 	Template    string //模板
-	Value       string //存证内容
+	Content     string //存证内容
 	Version     string //存证版本
 }
 
@@ -27,45 +27,65 @@ func NewProof(data, template, value, version string) *Proof {
 	p := &Proof{
 		ComleteData: data,
 		Template:    template,
-		Value:       value,
+		Content:     value,
 		Version:     version,
 	}
-	p.checkVersion()
 	return p
 }
 
-// 解析存证
-func (p *Proof) ParseProof() error {
+// 将完整数据抽离成简化内容 需要完整数据
+func (p *Proof) ComleteDataToContent() error {
+	err := p.checkVersion()
+	if err != nil {
+		return err
+	}
 	switch p.Version {
 	case Version1:
 		//存证内容和完整数据保持一致
 		if p.ComleteData != "" {
-			p.Value = p.ComleteData
+			p.Content = p.ComleteData
+			return nil
 		}
-		if p.Value != "" {
-			p.ComleteData = p.Value
-		}
-		return nil
+		return fmt.Errorf("V1 ComleteData is nil")
 	case Version2:
 		//分离模板和内容
 		if p.ComleteData != "" {
 			return p.splitValue()
 		}
-		//合并模板和内容
-		if p.Value != "" {
-			if p.Template == "" {
-				return fmt.Errorf("template is nil")
-			}
-			return p.mergeValue()
-		}
-		return fmt.Errorf("comleteData or value is nil")
+		return fmt.Errorf("V2 ComleteData  is nil")
 	default:
 		return fmt.Errorf("version err  version:%s", p.Version)
 	}
 
 }
 
-func (p *Proof) checkVersion() {
+// 将存证内容和模板合并成完整数据
+func (p *Proof) ContentToComleteData() error {
+	p.checkVersion()
+	switch p.Version {
+	case Version1:
+		//存证内容和完整数据保持一致
+		if p.Content != "" {
+			p.ComleteData = p.Content
+			return nil
+		}
+		return fmt.Errorf("V1 Content is nil")
+	case Version2:
+		//合并模板和内容
+		if p.Content != "" {
+			if p.Template == "" {
+				return fmt.Errorf("V2 Template is nil")
+			}
+			return p.mergeValue()
+		}
+		return fmt.Errorf("V2 Content is nil")
+	default:
+		return fmt.Errorf("version err  version:%s", p.Version)
+	}
+
+}
+
+func (p *Proof) checkVersion() error {
 	switch {
 	case p.Version == OldVersion:
 		p.Version = Version1
@@ -73,7 +93,10 @@ func (p *Proof) checkVersion() {
 		p.Version = Version1
 	case strings.Index(strings.ToUpper(p.Version), Version2) != -1:
 		p.Version = Version2
+	default:
+		return fmt.Errorf("Version err version:%s", p.Version)
 	}
+	return nil
 }
 
 // 分离模板
@@ -101,7 +124,7 @@ func (p *Proof) splitValue() error {
 		return fmt.Errorf("json types err")
 	}
 	out, _ := json.Marshal(last)
-	p.Value = string(out)
+	p.Content = string(out)
 	return nil
 }
 
@@ -180,7 +203,7 @@ func (p *Proof) mergeValue() error {
 		return err
 	}
 	var proof interface{}
-	err = json.Unmarshal([]byte(p.Value), &proof)
+	err = json.Unmarshal([]byte(p.Content), &proof)
 	if err != nil {
 		return err
 	}
@@ -217,7 +240,7 @@ func parseValue(data interface{}, proofData interface{}) (interface{}, bool) {
 	//组装单个value
 	case map[string]interface{}:
 		if _, ok := data.(map[string]interface{})["value"]; ok {
-			data.(map[string]interface{})["value"] = proofData.(string)
+			data.(map[string]interface{})["value"] = proofData
 			return data, true
 		} else {
 			return nil, false

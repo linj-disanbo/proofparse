@@ -10,6 +10,7 @@ const (
 	OldVersion = "1.0.0"
 	Version1   = "V1"
 	Version2   = "V2"
+	Version3   = "V3"
 )
 
 type Proof struct {
@@ -20,9 +21,9 @@ type Proof struct {
 }
 
 func NewProof(data, template, value, version string) *Proof {
-	//目前默认为v2
+	//目前默认为v1
 	if version == "" {
-		version = Version2
+		version = Version1
 	}
 	p := &Proof{
 		ComleteData: data,
@@ -40,19 +41,20 @@ func (p *Proof) ComleteDataToContent() error {
 		return err
 	}
 	switch p.Version {
-	case Version1:
+	case Version1, Version2:
 		//存证内容和完整数据保持一致
 		if p.ComleteData != "" {
 			p.Content = p.ComleteData
 			return nil
 		}
-		return fmt.Errorf("V1 ComleteData is nil")
-	case Version2:
+		return fmt.Errorf("ComleteData is nil %s", p.Version)
+
+	case Version3:
 		//分离模板和内容
 		if p.ComleteData != "" {
 			return p.splitValue()
 		}
-		return fmt.Errorf("V2 ComleteData  is nil")
+		return fmt.Errorf("ComleteData is nil %s", p.Version)
 	default:
 		return fmt.Errorf("version err  version:%s", p.Version)
 	}
@@ -63,22 +65,22 @@ func (p *Proof) ComleteDataToContent() error {
 func (p *Proof) ContentToComleteData() error {
 	p.checkVersion()
 	switch p.Version {
-	case Version1:
+	case Version1, Version2:
 		//存证内容和完整数据保持一致
 		if p.Content != "" {
 			p.ComleteData = p.Content
 			return nil
 		}
-		return fmt.Errorf("V1 Content is nil")
-	case Version2:
+		return fmt.Errorf("Content is nil %s", p.Version)
+	case Version3:
 		//合并模板和内容
 		if p.Content != "" {
 			if p.Template == "" {
-				return fmt.Errorf("V2 Template is nil")
+				return fmt.Errorf("Template is nil %s", p.Version)
 			}
 			return p.mergeValue()
 		}
-		return fmt.Errorf("V2 Content is nil")
+		return fmt.Errorf("Content is nil %s", p.Version)
 	default:
 		return fmt.Errorf("version err  version:%s", p.Version)
 	}
@@ -93,6 +95,8 @@ func (p *Proof) checkVersion() error {
 		p.Version = Version1
 	case strings.Index(strings.ToUpper(p.Version), Version2) != -1:
 		p.Version = Version2
+	case strings.Index(strings.ToUpper(p.Version), Version3) != -1:
+		p.Version = Version3
 	default:
 		return fmt.Errorf("Version err version:%s", p.Version)
 	}

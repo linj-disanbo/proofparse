@@ -11,8 +11,8 @@ func TestSplitValue(t *testing.T) {
 		com     string
 		version string
 	}{
-		{s, Version2},
-		{"[{\"label\":\"相册\",\"key\":\"\",\"type\":3,\"data\":[{\"data\":[{\"type\":\"image\",\"format\":\"hash\",\"value\":\"4a\"},{\"type\":\"image\",\"format\":\"hash\",\"value\":\"b4\"}],\"type\":1,\"key\":\"\",\"label\":\"相册\"},{\"data\":{\"type\":\"text\",\"format\":\"string\",\"value\":\"\"},\"type\":0,\"key\":\"\",\"label\":\"照片描述\"}]},{\"label\":\"ext\",\"key\":\"\",\"type\":3,\"data\":[{\"data\":{\"type\":\"text\",\"format\":\"string\",\"value\":\"相册\"},\"type\":0,\"key\":\"存证名称\",\"label\":\"存证名称\"},{\"data\":{\"type\":\"text\",\"format\":\"string\",\"value\":\"null\"},\"type\":0,\"key\":\"basehash\",\"label\":\"basehash\"},{\"data\":{\"type\":\"text\",\"format\":\"string\",\"value\":\"null\"},\"type\":0,\"key\":\"prehash\",\"label\":\"prehash\"},{\"data\":{\"type\":\"text\",\"format\":\"string\",\"value\":\"相册\"},\"type\":0,\"key\":\"存证类型\",\"label\":\"存证类型\"}]}]", Version2},
+		{s, Version3},
+		{"[{\"label\":\"相册\",\"key\":\"\",\"type\":3,\"data\":[{\"data\":[{\"type\":\"image\",\"format\":\"hash\",\"value\":\"4a\"},{\"type\":\"image\",\"format\":\"hash\",\"value\":\"b4\"}],\"type\":1,\"key\":\"\",\"label\":\"相册\"},{\"data\":{\"type\":\"text\",\"format\":\"string\",\"value\":\"\"},\"type\":0,\"key\":\"\",\"label\":\"照片描述\"}]},{\"label\":\"ext\",\"key\":\"\",\"type\":3,\"data\":[{\"data\":{\"type\":\"text\",\"format\":\"string\",\"value\":\"相册\"},\"type\":0,\"key\":\"存证名称\",\"label\":\"存证名称\"},{\"data\":{\"type\":\"text\",\"format\":\"string\",\"value\":\"null\"},\"type\":0,\"key\":\"basehash\",\"label\":\"basehash\"},{\"data\":{\"type\":\"text\",\"format\":\"string\",\"value\":\"null\"},\"type\":0,\"key\":\"prehash\",\"label\":\"prehash\"},{\"data\":{\"type\":\"text\",\"format\":\"string\",\"value\":\"相册\"},\"type\":0,\"key\":\"存证类型\",\"label\":\"存证类型\"}]}]", Version3},
 	}
 	var res = []string{
 		"{\"ext\":{\"basehash\":\"null\",\"prehash\":\"null\",\"存证名称\":\"相册\",\"存证类型\":\"相册\"},\"相册\":{\"照片描述\":\"\",\"相册\":[\"4bb42ecfe15a99ee586031b7a5a20a5d15c4364780f5ea14d278095d620619f5\",\"b45f6c7728e9b59f9ad381f36c29945317ba646e49ad3b73511ec1731c22dff4\"]}}",
@@ -37,7 +37,7 @@ func TestMergeValue(t *testing.T) {
 		contend string
 		version string
 	}{
-		{tmepStr, proof, Version2},
+		{tmepStr, proof, Version3},
 	}
 	var res = []string{
 		"[{\"data\":[{\"data\":[{\"format\":\"hash\",\"type\":\"image\",\"value\":\"4bb42ecfe15a99ee586031b7a5a20a5d15c4364780f5ea14d278095d620619f5\"},{\"format\":\"hash\",\"type\":\"image\",\"value\":\"b45f6c7728e9b59f9ad381f36c29945317ba646e49ad3b73511ec1731c22dff4\"}],\"key\":\"\",\"label\":\"相册\",\"type\":1},{\"data\":{\"format\":\"string\",\"type\":\"text\",\"value\":\"\"},\"key\":\"\",\"label\":\"照片描述\",\"type\":0}],\"key\":\"\",\"label\":\"相册\",\"type\":3},{\"data\":[{\"data\":{\"format\":\"string\",\"type\":\"text\",\"value\":\"相册\"},\"key\":\"存证名称\",\"label\":\"存证名称\",\"type\":0},{\"data\":{\"format\":\"string\",\"type\":\"text\",\"value\":\"null\"},\"key\":\"basehash\",\"label\":\"basehash\",\"type\":0},{\"data\":{\"format\":\"string\",\"type\":\"text\",\"value\":\"null\"},\"key\":\"prehash\",\"label\":\"prehash\",\"type\":0},{\"data\":{\"format\":\"string\",\"type\":\"text\",\"value\":\"相册\"},\"key\":\"存证类型\",\"label\":\"存证类型\",\"type\":0}],\"key\":\"\",\"label\":\"ext\",\"type\":3}]",

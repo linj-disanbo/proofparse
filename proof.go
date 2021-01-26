@@ -11,6 +11,10 @@ const (
 	Version1   = "V1"
 	Version2   = "V2"
 	Version3   = "V3"
+
+	ProofParaData  = "data"
+	ProofParaValue = "value"
+	ProofParaLabel = "label"
 )
 
 type Proof struct {
@@ -157,9 +161,9 @@ func splitMap(v map[string]interface{}) (string, interface{}, error) {
 	if !ok {
 		return "", nil, fmt.Errorf("get label err")
 	}
-	data, getValueOk = getValue(v["data"])
+	data, getValueOk = getValue(v[ProofParaData])
 	if !getValueOk {
-		res, err := splitArry(v["data"].([]interface{}))
+		res, err := splitArry(v[ProofParaData].([]interface{}))
 		if err != nil {
 			return "", nil, err
 		}
@@ -171,7 +175,7 @@ func splitMap(v map[string]interface{}) (string, interface{}, error) {
 
 // 获取label值
 func getLabel(in map[string]interface{}) (string, bool) {
-	v, ok := in["label"].(string)
+	v, ok := in[ProofParaLabel].(string)
 	return v, ok
 }
 
@@ -179,7 +183,7 @@ func getLabel(in map[string]interface{}) (string, bool) {
 func getValue(in interface{}) (interface{}, bool) {
 	switch in.(type) {
 	case map[string]interface{}:
-		if v, ok := in.(map[string]interface{})["value"]; ok {
+		if v, ok := in.(map[string]interface{})[ProofParaValue]; ok {
 			return v, true
 		}
 	case []interface{}:
@@ -228,8 +232,8 @@ func parseData(t []interface{}, p map[string]interface{}) (interface{}, error) {
 	var ok bool
 	for _, v := range t {
 		m := v.(map[string]interface{})
-		label := m["label"].(string)
-		m["data"], ok = parseValue(m["data"], p[label])
+		label := m[ProofParaLabel].(string)
+		m[ProofParaData], ok = parseValue(m[ProofParaData], p[label])
 		if !ok {
 			return nil, fmt.Errorf("mergeValue err")
 		}
@@ -243,19 +247,19 @@ func parseValue(data interface{}, proofData interface{}) (interface{}, bool) {
 	switch data.(type) {
 	//组装单个value
 	case map[string]interface{}:
-		if _, ok := data.(map[string]interface{})["value"]; ok {
-			data.(map[string]interface{})["value"] = proofData
+		if _, ok := data.(map[string]interface{})[ProofParaValue]; ok {
+			data.(map[string]interface{})[ProofParaValue] = proofData
 			return data, true
 		} else {
 			return nil, false
 		}
 	case []interface{}:
 		//组装value数组
-		if _, ok := data.([]interface{})[0].(map[string]interface{})["label"]; !ok {
+		if _, ok := data.([]interface{})[0].(map[string]interface{})[ProofParaLabel]; !ok {
 			var values []interface{}
 			for _, v := range proofData.([]interface{}) {
 				one := cloneMap(data.([]interface{})[0].(map[string]interface{}))
-				one["value"] = v
+				one[ProofParaValue] = v
 				values = append(values, one)
 			}
 			return values, true

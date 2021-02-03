@@ -92,6 +92,7 @@ func (p *Proof) ContentToComleteData() error {
 }
 
 func (p *Proof) checkVersion() error {
+	p.Version = strings.ToUpper(p.Version)
 	switch {
 	case p.Version == OldVersion:
 		p.Version = Version1

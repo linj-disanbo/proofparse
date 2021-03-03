@@ -230,11 +230,14 @@ func (p *Proof) mergeValue() error {
 // 组装data的值
 func parseData(t []interface{}, p map[string]interface{}) (interface{}, error) {
 	var res []map[string]interface{}
-	var ok bool
 	for _, v := range t {
 		m := v.(map[string]interface{})
 		label := m[ProofParaLabel].(string)
-		m[ProofParaData], ok = parseValue(m[ProofParaData], p[label])
+		plabel, ok := p[label]
+		if !ok {
+			continue
+		}
+		m[ProofParaData], ok = parseValue(m[ProofParaData], plabel)
 		if !ok {
 			return nil, fmt.Errorf("mergeValue err")
 		}

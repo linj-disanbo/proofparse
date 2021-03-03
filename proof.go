@@ -235,6 +235,7 @@ func parseData(t []interface{}, p map[string]interface{}) (interface{}, error) {
 		label := m[ProofParaLabel].(string)
 		plabel, ok := p[label]
 		if !ok {
+			res = append(res, m)
 			continue
 		}
 		m[ProofParaData], ok = parseValue(m[ProofParaData], plabel)

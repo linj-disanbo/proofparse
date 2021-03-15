@@ -2,6 +2,7 @@ package parse
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"strings"
 )
@@ -15,6 +16,10 @@ const (
 	ProofParaData  = "data"
 	ProofParaValue = "value"
 	ProofParaLabel = "label"
+
+	ProofParaLabelExt = "ext"
+
+	TemplateExtInfo = "{\"data\":[{\"data\":{\"format\":\"string\",\"type\":\"text\",\"value\":\"\"},\"type\":0,\"key\":\"存证名称\",\"label\":\"存证名称\"},{\"data\":{\"format\":\"hash\",\"type\":\"text\",\"value\":\"null\"},\"type\":0,\"key\":\"basehash\",\"label\":\"basehash\"},{\"data\":{\"format\":\"hash\",\"type\":\"text\",\"value\":\"null\"},\"type\":0,\"key\":\"prehash\",\"label\":\"prehash\"},{\"data\":{\"format\":\"string\",\"type\":\"text\",\"value\":\"\"},\"type\":0,\"key\":\"存证类型\",\"label\":\"存证类型\"}],\"type\":3,\"key\":\"\",\"label\":\"ext\"}"
 )
 
 type Proof struct {
@@ -164,6 +169,7 @@ func splitMap(v map[string]interface{}) (string, interface{}, error) {
 	}
 	data, getValueOk = getValue(v[ProofParaData])
 	if !getValueOk {
+
 		res, err := splitArry(v[ProofParaData].([]interface{}))
 		if err != nil {
 			return "", nil, err
@@ -218,6 +224,10 @@ func (p *Proof) mergeValue() error {
 	}
 	pMap := proof.(map[string]interface{})
 	t := temp.([]interface{})
+	t, err = checkTemplateExt(t)
+	if err != nil {
+		return err
+	}
 	pBack, err := parseData(t, pMap)
 	if err != nil {
 		return err
@@ -287,4 +297,24 @@ func cloneMap(m map[string]interface{}) map[string]interface{} {
 		cloneMap[k] = v
 	}
 	return cloneMap
+}
+
+func checkTemplateExt(t []interface{}) ([]interface{}, error) {
+	//检查是否存在ext
+	if m, ok := t[len(t)-1].(map[string]interface{}); !ok {
+		return nil, errors.New("template err")
+	} else {
+		s, ok := m[ProofParaLabel].(string)
+		if !ok {
+			return nil, errors.New("template err , nil label")
+		}
+		if s == ProofParaLabelExt {
+			return t, nil
+		}
+	}
+	//不存在ext 则在末尾添加ext
+	var tmpExtInfo interface{}
+	json.Unmarshal([]byte(TemplateExtInfo), &tmpExtInfo)
+	t = append(t, tmpExtInfo)
+	return t, nil
 }

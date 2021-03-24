@@ -8,10 +8,11 @@ import (
 )
 
 const (
-	OldVersion = "1.0.0"
-	Version1   = "V1"
-	Version2   = "V2"
-	Version3   = "V3"
+	OldVersion = "1.0.0" //最初版本（兼容）
+	Version1   = "V1"    //最初版本
+	Version2   = "V2"    //项目方的自定义版本 不做处理
+	Version3   = "V3"    //对存证内容和模板分离 + 合并
+	Version4   = "V4"    //不分离 + 合并
 
 	ProofParaData  = "data"
 	ProofParaValue = "value"
@@ -50,7 +51,7 @@ func (p *Proof) ComleteDataToContent() error {
 		return err
 	}
 	switch p.Version {
-	case Version1, Version2:
+	case Version1, Version2, Version4:
 		//存证内容和完整数据保持一致
 		if p.ComleteData != "" {
 			p.Content = p.ComleteData
@@ -81,7 +82,7 @@ func (p *Proof) ContentToComleteData() error {
 			return nil
 		}
 		return fmt.Errorf("Content is nil %s", p.Version)
-	case Version3:
+	case Version3, Version4:
 		//合并模板和内容
 		if p.Content != "" {
 			if p.Template == "" {
@@ -107,6 +108,8 @@ func (p *Proof) checkVersion() error {
 		p.Version = Version2
 	case strings.Index(strings.ToUpper(p.Version), Version3) != -1:
 		p.Version = Version3
+	case strings.Index(strings.ToUpper(p.Version), Version4) != -1:
+		p.Version = Version4
 	default:
 		return fmt.Errorf("Version err version:%s", p.Version)
 	}

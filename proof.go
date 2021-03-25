@@ -45,7 +45,7 @@ func NewProof(data, template, value, version string) *Proof {
 
 func FormatVersion(version string) (string, error) {
 	switch {
-	case version == "":
+	case version == "" || version == OldVersion:
 		return Version1, nil
 	case strings.Index(strings.ToUpper(version), Version1) != -1:
 		return Version1, nil

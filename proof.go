@@ -2,7 +2,6 @@ package parse
 
 import (
 	"encoding/json"
-	"errors"
 	"fmt"
 	"strings"
 )
@@ -42,6 +41,23 @@ func NewProof(data, template, value, version string) *Proof {
 		Version:     version,
 	}
 	return p
+}
+
+func FormatVersion(version string) (string, error) {
+	switch {
+	case version == "":
+		return Version1, nil
+	case strings.Index(strings.ToUpper(version), Version1) != -1:
+		return Version1, nil
+	case strings.Index(strings.ToUpper(version), Version2) != -1:
+		return Version2, nil
+	case strings.Index(strings.ToUpper(version), Version3) != -1:
+		return Version3, nil
+	case strings.Index(strings.ToUpper(version), Version4) != -1:
+		return Version4, nil
+	default:
+		return "", fmt.Errorf("version is err , version:" + version)
+	}
 }
 
 // 将完整数据抽离成简化内容 需要完整数据
@@ -98,20 +114,10 @@ func (p *Proof) ContentToComleteData() error {
 }
 
 func (p *Proof) checkVersion() error {
-	p.Version = strings.ToUpper(p.Version)
-	switch {
-	case p.Version == OldVersion:
-		p.Version = Version1
-	case strings.Index(strings.ToUpper(p.Version), Version1) != -1:
-		p.Version = Version1
-	case strings.Index(strings.ToUpper(p.Version), Version2) != -1:
-		p.Version = Version2
-	case strings.Index(strings.ToUpper(p.Version), Version3) != -1:
-		p.Version = Version3
-	case strings.Index(strings.ToUpper(p.Version), Version4) != -1:
-		p.Version = Version4
-	default:
-		return fmt.Errorf("Version err version:%s", p.Version)
+	var err error
+	p.Version, err = FormatVersion(p.Version)
+	if err != nil {
+		return err
 	}
 	return nil
 }
@@ -305,11 +311,11 @@ func cloneMap(m map[string]interface{}) map[string]interface{} {
 func checkTemplateExt(t []interface{}) ([]interface{}, error) {
 	//检查是否存在ext
 	if m, ok := t[len(t)-1].(map[string]interface{}); !ok {
-		return nil, errors.New("template err")
+		return nil, fmt.Errorf("template err")
 	} else {
 		s, ok := m[ProofParaLabel].(string)
 		if !ok {
-			return nil, errors.New("template err , nil label")
+			return nil, fmt.Errorf("template err , nil label")
 		}
 		if s == ProofParaLabelExt {
 			return t, nil

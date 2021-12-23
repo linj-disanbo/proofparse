@@ -19,7 +19,7 @@ const (
 
 	ProofParaLabelExt = "ext"
 
-	TemplateExtInfo = "{\"data\":[{\"data\":{\"format\":\"string\",\"type\":\"text\",\"value\":\"\"},\"type\":0,\"key\":\"存证名称\",\"label\":\"存证名称\"},{\"data\":{\"format\":\"hash\",\"type\":\"text\",\"value\":\"null\"},\"type\":0,\"key\":\"basehash\",\"label\":\"basehash\"},{\"data\":{\"format\":\"hash\",\"type\":\"text\",\"value\":\"null\"},\"type\":0,\"key\":\"prehash\",\"label\":\"prehash\"},{\"data\":{\"format\":\"string\",\"type\":\"text\",\"value\":\"\"},\"type\":0,\"key\":\"存证类型\",\"label\":\"存证类型\"}],\"type\":3,\"key\":\"\",\"label\":\"ext\"}"
+	//TemplateExtInfo = "{\"data\":[{\"data\":{\"format\":\"string\",\"type\":\"text\",\"value\":\"\"},\"type\":0,\"key\":\"存证名称\",\"label\":\"存证名称\"},{\"data\":{\"format\":\"hash\",\"type\":\"text\",\"value\":\"null\"},\"type\":0,\"key\":\"basehash\",\"label\":\"basehash\"},{\"data\":{\"format\":\"hash\",\"type\":\"text\",\"value\":\"null\"},\"type\":0,\"key\":\"prehash\",\"label\":\"prehash\"},{\"data\":{\"format\":\"string\",\"type\":\"text\",\"value\":\"\"},\"type\":0,\"key\":\"存证类型\",\"label\":\"存证类型\"}],\"type\":3,\"key\":\"\",\"label\":\"ext\"}"
 )
 
 // BaseProof  基础的存证转换接口
@@ -244,10 +244,10 @@ func (p *Proof) mergeValue() error {
 	}
 	pMap := proof.(map[string]interface{})
 	t := temp.([]interface{})
-	t, err = checkTemplateExt(t)
-	if err != nil {
-		return err
-	}
+	//t, err = checkTemplateExt(t)
+	//if err != nil {
+	//	return err
+	//}
 	pBack, err := parseData(t, pMap)
 	if err != nil {
 		return err
@@ -319,22 +319,23 @@ func cloneMap(m map[string]interface{}) map[string]interface{} {
 	return cloneMap
 }
 
-func checkTemplateExt(t []interface{}) ([]interface{}, error) {
-	//检查是否存在ext
-	if m, ok := t[len(t)-1].(map[string]interface{}); !ok {
-		return nil, fmt.Errorf("template err")
-	} else {
-		s, ok := m[ProofParaLabel].(string)
-		if !ok {
-			return nil, fmt.Errorf("template err , nil label")
-		}
-		if s == ProofParaLabelExt {
-			return t, nil
-		}
-	}
-	//不存在ext 则在末尾添加ext
-	var tmpExtInfo interface{}
-	json.Unmarshal([]byte(TemplateExtInfo), &tmpExtInfo)
-	t = append(t, tmpExtInfo)
-	return t, nil
-}
+// 现在模板里无需增加ext了
+//func checkTemplateExt(t []interface{}) ([]interface{}, error) {
+//	//检查是否存在ext
+//	if m, ok := t[len(t)-1].(map[string]interface{}); !ok {
+//		return nil, fmt.Errorf("template err")
+//	} else {
+//		s, ok := m[ProofParaLabel].(string)
+//		if !ok {
+//			return nil, fmt.Errorf("template err , nil label")
+//		}
+//		if s == ProofParaLabelExt {
+//			return t, nil
+//		}
+//	}
+//	//不存在ext 则在末尾添加ext
+//	var tmpExtInfo interface{}
+//	json.Unmarshal([]byte(TemplateExtInfo), &tmpExtInfo)
+//	t = append(t, tmpExtInfo)
+//	return t, nil
+//}
